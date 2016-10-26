@@ -2,6 +2,7 @@
 
 /*deklaracija funkcije*/
 static void on_display(void);
+static void on_keyboard(unsigned char key, int x, int y);
 
 int main(int argc, char **argv)
 {
@@ -19,6 +20,7 @@ int main(int argc, char **argv)
 
 	/*poziv funkcije za prikaz prozora*/
 	glutDisplayFunc(on_display);	
+	glutKeyboardFunc(on_keyboard);
 	
 	glClearColor(0.75,0,0.80,0);	
 	/*bafer dubine*/
@@ -37,7 +39,16 @@ static void on_display(void)
        
 }
 
+static void on_keyboard(unsigned char key, int x, int y)
+{
+	switch(key)
+	{
+   	  case 27:
+		exit(0);
+		break;
+	}
 
+}
 
 
 
