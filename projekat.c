@@ -3,6 +3,8 @@
 /*deklaracija funkcije*/
 static void on_display(void);
 
+
+//proba git-a
 int main(int argc, char **argv)
 {
 	/*inicijalizuje glut*/
