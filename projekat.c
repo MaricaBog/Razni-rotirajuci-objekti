@@ -3,11 +3,17 @@
 /*deklaracija funkcije*/
 static void on_display(void);
 static void on_keyboard(unsigned char key, int x, int y);
+<<<<<<< HEAD
 static void initialize(void);
 static void on_reshape(int width, int height);
 
 static int w_width, h_height;
 
+=======
+
+
+//proba git-a
+>>>>>>> bd7b497d58433ac1b72152b3a2bbf20122a89faf
 int main(int argc, char **argv)
 {
 	/*inicijalizuje glut*/
@@ -18,13 +24,18 @@ int main(int argc, char **argv)
 	glutInitDisplayMode(GLUT_RGB | /*GLUTH_DEPTH*/ GLUT_DOUBLE);
  
 	/*kreiranje prozora*/
+<<<<<<< HEAD
 	glutInitWindowSize(800,600);
+=======
+	glutInitWindowSize(1450,650);
+>>>>>>> bd7b497d58433ac1b72152b3a2bbf20122a89faf
 	glutInitWindowPosition(100,100);
 	glutCreateWindow(argv[0]);
 
 	/*poziv funkcije za prikaz prozora*/
 	glutDisplayFunc(on_display);	
 	glutKeyboardFunc(on_keyboard);
+<<<<<<< HEAD
         glutReshapeFunc(on_reshape);
 	
 	initialize();
@@ -49,12 +60,23 @@ static void on_reshape(int width,int height)
 {
 	w_width=width;
 	h_height=height;
+=======
+	
+	glClearColor(0.75,0,0.80,0);	
+	/*bafer dubine*/
+	glEnable(GL_DEPTH_TEST);
+
+
+	glutMainLoop();
+	return 0;
+>>>>>>> bd7b497d58433ac1b72152b3a2bbf20122a89faf
 }
 
 static void on_display(void)
 {
 	/*brise se prethodni sadrzaj prozora,ali nije zamenjen*/
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+<<<<<<< HEAD
 	
 	/*definise pogled, kamera je u 0,0 koordinatama-donji-levi ugao,w i h sirina i visina prozora*/
 	glViewport(0,0,w_width,h_height);
@@ -84,18 +106,32 @@ static void on_display(void)
 
 
 	glutSwapBuffers();
+=======
+	glutSwapBuffers();       
+>>>>>>> bd7b497d58433ac1b72152b3a2bbf20122a89faf
 }
 
 static void on_keyboard(unsigned char key, int x, int y)
 {
 	switch(key)
 	{
+<<<<<<< HEAD
    	  case 27:
 		exit(0);
 		break;
 	}
 
+=======
+	case 27:
+		exit(0); 	
+		break;
+	}
+>>>>>>> bd7b497d58433ac1b72152b3a2bbf20122a89faf
 }
 
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> bd7b497d58433ac1b72152b3a2bbf20122a89faf
