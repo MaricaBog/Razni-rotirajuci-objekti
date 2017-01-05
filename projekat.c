@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 
 	/*rgb - rezim rgb boja,
 	double- iscrtava na jednom prozoru, pa tu sliku prebacuje na ekran-drugi prozor*/
-	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
+	glutInitDisplayMode(GLUT_RGB /*| GLUT_DEPTH */| GLUT_DOUBLE);
  
 	/*kreiranje prozora*/
 	glutInitWindowSize(1450,650);
@@ -95,7 +95,7 @@ static void on_timer(int value)
 static void on_display(void)
 {
 
-	float rotacija_kocke;
+	float rotacija_kocke, rotacija_svere;
 	/*brise se prethodni sadrzaj prozora,ali nije zamenjen*/
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
@@ -115,6 +115,14 @@ static void on_display(void)
 	  glutWireCube(1);		
 	glPopMatrix();
 
+	rotacija_svere = 360 * hours / (10*24);
+	//glTranslatef(2,0,0);
+
+	glPushMatrix();
+	  glRotatef(rotacija_svere, 1,0,0);
+	  glColor3f(0,1,0);
+	  glutWireSphere(1.5,5,5);
+	glPopMatrix();
 
 	glutSwapBuffers();
 
