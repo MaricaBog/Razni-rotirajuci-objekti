@@ -1,6 +1,8 @@
-#include<GL/glut.h>
-#include<math.h>
-#include<stdlib.h>
+#include <GL/glut.h>
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 
 //vreme proteklo od pocetka simulacije
 static float hours;
@@ -48,11 +50,11 @@ int main(int argc, char **argv)
 static void initialize(void)
 {
 	/*boja pozadine*/
-	glClearColor(0.75,0,0.80,0);	
+	glClearColor(0,0,0.1,0);	
 
 	glEnable(GL_DEPTH_TEST);
 	glLineWidth(2);
-	/*bafer dubine*/
+
 
 
 }
@@ -70,7 +72,7 @@ static void on_reshape(int width,int height)
 	
 	/*postavalja parametre perspektive*/
 	/*60-ugao vidnog polja, u pravcu y ose,  razlomak- vidno polje po x osi i kolicnik je sirine i visine,*/
-	gluPerspective(60, width/(float)height, 1, 5);
+	gluPerspective(60, width/(float)height, 0, 20);
 	/*1-bliza ravan - near, 5 dalja ravan -far*/
 
 }
@@ -107,22 +109,6 @@ static void on_display(void)
 	/*1,2,3 - polozaj posmatraca,  0,0,0 - tacka u koju gledamo, 0,1,0 - vektor normale na posmatraca, rotacija oko y*/
 	gluLookAt(1,2,3,0,0,0,0,1,0);
 
-	/*da se odnosi samo na objekat izmedju push i pop*/
-	rotacija_kocke = 360 * hours / (15 * 24);
-	glPushMatrix();
-   	  glRotatef(rotacija_kocke,0,1,0);		
-	  glColor3f(0,0,1);
-	  glutWireCube(1);		
-	glPopMatrix();
-
-	rotacija_svere = 360 * hours / (10*24);
-	//glTranslatef(2,0,0);
-
-	glPushMatrix();
-	  glRotatef(rotacija_svere, 1,0,0);
-	  glColor3f(0,1,0);
-	  glutWireSphere(1.5,5,5);
-	glPopMatrix();
 
 	glutSwapBuffers();
 
