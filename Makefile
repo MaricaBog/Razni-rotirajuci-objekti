@@ -1,16 +1,7 @@
-PROGRAM = 1
-CC      = gcc
-CFLAGS  = -g -Wall -I/usr/X11R6/include -I/usr/pkg/include
-LDFLAGS = -L/usr/X11R6/lib -L/usr/pkg/lib
-LDLIBS  = -lglut -lGLU -lGL -lm
-
-$(PROGRAM): projekat.o image.o
-	$(CC) $(LDFLAGS) -o $(PROGRAM) image.o projekat.o $(LDLIBS)
-
-.PHONY: clean dist
+projekat: projekat.c image.o
+	gcc projekat.c -o 1 image.o -lGL -lGLU -lglut -lm -Wall
 
 clean:
-	-rm *.o $(PROGRAM) *core
-
-dist: clean
-	-tar -chvj -C .. -f ../$(PROGRAM).tar.bz2 $(PROGRAM)
+	rm 1
+	rm *.o	
+	rm *.~
