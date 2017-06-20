@@ -34,6 +34,7 @@ static float phi, theta, delta_phi, delta_theta;
 float pomeraj=0.0f, pomeraj1=0.0f,pomeraj3=0.0f, pomeraj4 = 0.0f,pomeraj2=0.0f,pomeraj5=0.0f, pomeraj6=0.0f, pomeraj7=0.0f;
 int frameNumber = 0;
 
+
 //deklaracije funkcija
 static void on_keyboard(unsigned char key, int x, int y);
 static void on_reshape(int width,int height);
@@ -41,6 +42,7 @@ void on_display(void);
 void on_timer(int value);
 static void init_lights();
 static void set_material(int id);
+void mis(int dugme, int stanje, int x, int y);
 
 static void vetrenjaca();
 static void elisa();
@@ -72,7 +74,7 @@ int main(int argc, char* argv[]){
     glutReshapeFunc(on_reshape);
     glutKeyboardFunc(on_keyboard);
     glutTimerFunc(33, on_timer, 1);
-
+    glutMouseFunc(mis);
 
     phi = theta = 0;
     delta_phi = delta_theta = PI / 90;
@@ -87,6 +89,37 @@ int main(int argc, char* argv[]){
   return 0;
 }
 
+
+void mis(int dugme, int stanje, int x, int y)
+{
+   int Sdugme = glutGetModifiers();
+   
+   if((stanje == GLUT_DOWN))
+   {
+	//levo dugme misa ubrzava elisu
+	if(dugme == GLUT_LEFT_BUTTON)	
+	{
+	   pomeraj2+=10;
+        }
+	//desno dugme ubrzava torus
+        else if(dugme == GLUT_RIGHT_BUTTON)
+ 	{
+	  frameNumber+=30;
+	}
+   }
+   //desno dugme i sift pomeraju zupcanike 
+   if((stanje == GLUT_DOWN) && Sdugme == GLUT_ACTIVE_SHIFT)
+   {
+	if(dugme == GLUT_RIGHT_BUTTON )   
+	{
+ 	  pomeraj7+=10;
+	  pomeraj1+=10;
+	  pomeraj3+=4;
+	}
+    }	
+  
+
+}
 
 static void initialize(void)
 {
@@ -278,9 +311,30 @@ static void on_keyboard(unsigned char key, int x, int y)
     case 'k':    
 	pomeraj6+=0.1;	
 	glutPostRedisplay();
-	break;	
-       }
+ 	break;	
+
+	//Vetrenjaca se rotira brze
+ /*   case 'm':
+	pomeraj2+=0.5;	
+	glutPostRedisplay();
+	break;
+
+    case 'M':
+	frameNumber+=1;
+	glutPostRedisplay();
+	break;
+    case 'f':
+	pomeraj7+=0.5;
+	pomeraj1+=0.5;
+	pomeraj3+=0.2;  //pomerac sata
+        glutPostRedisplay();
+	break;*/
+
+    }
 }
+   
+
+
 
 static void on_reshape(int width,int height)
 {
@@ -1231,6 +1285,7 @@ void on_display(void){
 	glPopMatrix();
 
 	nebo_i_zemlja(14);
+	
 
         //vetrenjaca
         glPushMatrix();
