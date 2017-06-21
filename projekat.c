@@ -17,7 +17,9 @@
 
 /* Identifikatori tekstura. */
 static GLuint names[3];
-static int zid1=0;
+static GLenum h;
+
+//static int zid1[3];
 static int prom =0;
 
 // velicina crtica za minute
@@ -50,7 +52,7 @@ static void vetrenjaca();
 static void elisa();
 static void motor();
 static void drzac();
-static void ploce();
+static int ploce();
 static void crtajPrsten(float rZ, float rR);
 static void crtajZubac(float rZ, float rR, int br_zubaca, float visina_zubca);
 static void crtajZupcanik(float rZ, float rR, float visina_zubca, int br_zubaca);
@@ -103,8 +105,7 @@ void mis(int dugme, int stanje, int x, int y)
 	{
 	  pomeraj2+=10;
           prom++;
-	  if(prom>3)
-	    prom=0;
+	  
         }
 	//desno dugme ubrzava torus
         else if(dugme == GLUT_RIGHT_BUTTON)
@@ -125,6 +126,7 @@ void mis(int dugme, int stanje, int x, int y)
   
 
 }
+
 
 static void initialize(void)
 {
@@ -152,8 +154,11 @@ static void initialize(void)
     // Kreira se prva tekstura. 
     image_read(image, FILENAME0);
 
+     h = GL_RGB;	
+
     // Generisu se identifikatori tekstura. 
     glGenTextures(3, names);
+
 
     glBindTexture(GL_TEXTURE_2D, names[0]);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -162,8 +167,8 @@ static void initialize(void)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
                  image->width, image->height, 0,
-                 GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
-
+                 h, GL_UNSIGNED_BYTE, image->pixels);
+    
     // Kreira se druga tekstura. 
     image_read(image, FILENAME1);
 
@@ -188,7 +193,7 @@ static void initialize(void)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
                  image->width, image->height, 0,
-                 GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
+                  GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
 
     // Iskljucujemo aktivnu teksturu 
     glBindTexture(GL_TEXTURE_2D, 1);
@@ -343,14 +348,19 @@ static void on_keyboard(unsigned char key, int x, int y)
 	pomeraj3+=0.2;  //pomerac sata
         glutPostRedisplay();
 	break;
-  }
-  
 
+   //formati
+    case '1':
+	     h = GL_ALPHA;
+	     glutPostRedisplay();
+	     break;
+    case '2':
+	     h = GL_RED;
+	     glutPostRedisplay();
+	     break;
+	}
 }
    
-
-
-
 static void on_reshape(int width,int height)
 {
 	//postavlja se viewport
@@ -771,7 +781,7 @@ static void vetar()
 	glDisable(GL_LINE_STIPPLE);
 }
 
-static void ploce()
+static int ploce()
 {
 
 	//energija
@@ -830,6 +840,8 @@ static void ploce()
 }
 
 	 glDisable(GL_LINE_STIPPLE);
+
+	return 1;
 
 }
 
@@ -1295,38 +1307,31 @@ void on_display(void){
               0, 0, 0, 0, 1, 0);
 
 	//zid
+	//pravim niz od 3 elementa(3 zida)	
+	
+	   int p = rand() % 4;	
+	   GLint zid1[p];
+	
 
-	for(i=0;i<prom;i++)
-	{	
-	glPushMatrix();
-	 glTranslatef(0,0,-1);	
-  	 glRotatef(90,0,1,0);
-         glTranslatef(0,0,-pomeraj/8);
-	 glTranslatef(-1*i,0,0);
-         glRotatef(ugao,0,1,0);
-	  zid1=zid(5,5,5,5);
-	glPopMatrix();
+ 	   glPushMatrix();
+           glTranslatef(0,0,pomeraj/8);
+	   glRotatef(90,0,1,0); 
          
-	glPushMatrix();
-	 glTranslatef(0,0,-1);	
-  	 glRotatef(90,0,1,0);
-         glTranslatef(0,0,-pomeraj/8);
-	 glTranslatef(-1.5*i,0,0);
-         glRotatef(ugao1,0,1,0);
-	  zid1=zid(5,5,5,5);
-	glPopMatrix();
+	   glRotatef(ugao,0,0,1);
+	   zid1[0]=zid(5,6,5,5);
+	   glRotatef(-ugao,0,0,1);	
+	 
+	   glTranslatef(-1.6,0,0);
+	   glRotatef(ugao1,0,0,1);	
+	   zid1[1]=zid(5,6,5,5);
+	   glRotatef(-ugao1,0,0,1);	
+	
+           glTranslatef(-1.6,0,0);
+	   glRotatef(ugao2,0,0,1);	
+	   zid1[2]=zid(5,6,5,5);
+	   glRotatef(-ugao2,0,0,1);	
 
-	glPushMatrix();
-	 glTranslatef(0,0,-1);	
-  	 glRotatef(90,0,1,0);
-         glTranslatef(-pomeraj/8,0,0);
-	 glTranslatef(-2*i,0,0);
-         glRotatef(ugao2,0,1,0);
-	  zid1=zid(5,5,5,5);
-	glPopMatrix();
-
-	}
-
+	 glPopMatrix();
  	
 	nebo_i_zemlja(14);
 	
