@@ -17,6 +17,8 @@
 
 /* Identifikatori tekstura. */
 static GLuint names[3];
+static int zid1=0;
+static int prom =0;
 
 // velicina crtica za minute
 const float minStart  = 0.9f, minEnd = 1.0f;
@@ -29,7 +31,7 @@ const float clockR = 1.0f, clockVol  = 2.0f, angle1min = M_PI / 30.0f;
 
 // Uglovi u sfernom koordinatnom sistemu koji odredjuju polozaj vidne 
 // tacke.
-static float phi, theta, delta_phi, delta_theta;
+static float phi, theta, delta_phi, delta_theta,ugao=0,ugao1=0,ugao2=0;
 
 float pomeraj=0.0f, pomeraj1=0.0f,pomeraj3=0.0f, pomeraj4 = 0.0f,pomeraj2=0.0f,pomeraj5=0.0f, pomeraj6=0.0f, pomeraj7=0.0f;
 int frameNumber = 0;
@@ -53,7 +55,7 @@ static void crtajPrsten(float rZ, float rR);
 static void crtajZubac(float rZ, float rR, int br_zubaca, float visina_zubca);
 static void crtajZupcanik(float rZ, float rR, float visina_zubca, int br_zubaca);
 static void initialize(void);
-static void zid(float rZ, float rR, int br_zubaca, float visina_zubca);
+static int zid(float rZ, float rR, int br_zubaca, float visina_zubca);
 static void dovodnici();
 static void pokretac_sata();
 static void vetar();
@@ -99,7 +101,10 @@ void mis(int dugme, int stanje, int x, int y)
 	//levo dugme misa ubrzava elisu
 	if(dugme == GLUT_LEFT_BUTTON)	
 	{
-	   pomeraj2+=10;
+	  pomeraj2+=10;
+          prom++;
+	  if(prom>3)
+	    prom=0;
         }
 	//desno dugme ubrzava torus
         else if(dugme == GLUT_RIGHT_BUTTON)
@@ -313,24 +318,34 @@ static void on_keyboard(unsigned char key, int x, int y)
 	glutPostRedisplay();
  	break;	
 
-	//Vetrenjaca se rotira brze
- /*   case 'm':
-	pomeraj2+=0.5;	
+    //rotira se prvi zid
+     case 'm':
+  	ugao++;
 	glutPostRedisplay();
 	break;
 
+    //rotira se drugi zid
     case 'M':
-	frameNumber+=1;
+	ugao1++;
 	glutPostRedisplay();
 	break;
+
+    //rotira se treci zid
+    case'q':
+	ugao2++;
+	glutPostRedisplay();
+	break;
+
+
     case 'f':
 	pomeraj7+=0.5;
 	pomeraj1+=0.5;
 	pomeraj3+=0.2;  //pomerac sata
         glutPostRedisplay();
-	break;*/
+	break;
+  }
+  
 
-    }
 }
    
 
@@ -1071,7 +1086,7 @@ static void nebo_i_zemlja(float visina_zubca)
 
 }
 
-static void zid(float rZ, float rR, int br_zubaca, float visina_zubca){
+static int zid(float rZ, float rR, int br_zubaca, float visina_zubca){
 {
 	float x= (2*rZ*PI)/(1.6*br_zubaca);
 	float greska=rZ-sqrt(rZ*rZ-(0.3*x)*(0.3*x));
@@ -1081,70 +1096,70 @@ static void zid(float rZ, float rR, int br_zubaca, float visina_zubca){
 	//pod
 	glBegin(GL_QUADS);
 	        glTexCoord2f(0, 0);
-    		glVertex3f(-1.15*x, -1.99, 1);
+    		glVertex3f(-0.2*x, -1.99, 1);
    		glNormal3f(0,-1,0);
 	        glTexCoord2f(1, 0);
-    		glVertex3f(-1.15*x, -1.99, 0.5);
+    		glVertex3f(-0.2*x, -1.99, 0.5);
     		glNormal3f(0,-1,0);
 	        glTexCoord2f(1, 1);
-    		glVertex3f(0.3*x, -1.99, 0.5);
+    		glVertex3f(0.2*x, -1.99, 0.5);
     		glNormal3f(0,-1,0);
 	        glTexCoord2f(0, 1);
-    		glVertex3f(0.3*x, -1.99, 1);
+    		glVertex3f(0.2*x, -1.99, 1);
     		glNormal3f(0,-1,0);
   	glEnd();
 
 	//krov
 	glBegin(GL_QUADS);
 	        glTexCoord2f(0, 0);
-		glVertex3f(-1.15*x, visina_zubca-2.9, 1);
+		glVertex3f(-0.2*x, visina_zubca-2.9, 1);
 		glNormal3f(0,1,0);
 	        glTexCoord2f(1, 0);
-   		glVertex3f(-1.15*x, visina_zubca-2.9, 0.5);
+   		glVertex3f(-0.2*x, visina_zubca-2.9, 0.5);
     		glNormal3f(0,1,0);
 	        glTexCoord2f(1, 1);
-    		glVertex3f(0.3*x, visina_zubca-2.9, 0.5);
+    		glVertex3f(0.2*x, visina_zubca-2.9, 0.5);
     		glNormal3f(0,1,0);
 	        glTexCoord2f(0, 1);
-    		glVertex3f(0.3*x, visina_zubca-2.9, 1);
+    		glVertex3f(0.2*x, visina_zubca-2.9, 1);
     		glNormal3f(0,1,0);
   	glEnd();
  
 	//lice
 	glBegin(GL_QUADS);
 	        glTexCoord2f(0, 0);
-    		glVertex3f(-1.15*x, -1.99, 1);
+    		glVertex3f(-0.2*x, -1.99, 1);
    		glNormal3f(0,0,1);
 
 	        glTexCoord2f(1, 0);
-		glVertex3f(0.3*x, -1.99, 1);
+		glVertex3f(0.2*x, -1.99, 1);
     		glNormal3f(0,0,1);
 
 	        glTexCoord2f(1, 1);		
-    		glVertex3f(0.3*x, visina_zubca-2.9, 1);
+    		glVertex3f(0.2*x, visina_zubca-2.9, 1);
     		glNormal3f(0,0,1);
 
 	        glTexCoord2f(0, 1);
-   		glVertex3f(-1.15*x, visina_zubca-2.9, 1);
+   		glVertex3f(-0.2*x, visina_zubca-2.9, 1);
     		glNormal3f(0,0,1);
   	glEnd();
 
   	//nalicje
 	glBegin(GL_QUADS);
 	        glTexCoord2f(0, 0);
-		glVertex3f(-1.15*x, -1.99, 0.5);
+		glVertex3f(-0.2*x, -1.99, 0.5);
     		glNormal3f(0,0,-1);
 	
 	        glTexCoord2f(1, 0);
-		glVertex3f(0.3*x, -1.99, 0.5);
+		glVertex3f(0.2*x, -1.99, 0.5);
     		glNormal3f(0,0,-1);
 		
 	        glTexCoord2f(1, 1);
-    		glVertex3f(0.3*x, visina_zubca-2.9, 0.5);
+    		glVertex3f(0.2*x, visina_zubca-2.9, 0.5);
     		glNormal3f(0,0,-1);
 		
 	        glTexCoord2f(0, 1);
-   		glVertex3f(-1.15*x, visina_zubca-2.9, 0.5);
+   		glVertex3f(-0.2*x, visina_zubca-2.9, 0.5);
     		glNormal3f(0,0,-1);
   	glEnd();
 
@@ -1154,43 +1169,44 @@ static void zid(float rZ, float rR, int br_zubaca, float visina_zubca){
   
 	glBegin(GL_QUADS);
 	      glTexCoord2f(0, 0);
-	      glVertex3f(0.3*x, -1.99, 1);
+	      glVertex3f(0.2*x, -1.99, 1);
     	      glNormal3f(visina_zubca/s,pat/s,0);
 
     	      glTexCoord2f(1, 0);
-	      glVertex3f(0.3*x, -1.99, 0.5);
+	      glVertex3f(0.2*x, -1.99, 0.5);
     	      glNormal3f(visina_zubca/s,pat/s,0);
 
 	      glTexCoord2f(1, 1);
-    	      glVertex3f(0.3*x, visina_zubca-2.9, 0.5);
+    	      glVertex3f(0.2*x, visina_zubca-2.9, 0.5);
 	      glNormal3f(visina_zubca/s,pat/s,0);
 
 	      glTexCoord2f(0, 1);
-    	      glVertex3f(0.3*x, visina_zubca-2.9, 1);
+    	      glVertex3f(0.2*x, visina_zubca-2.9, 1);
     	      glNormal3f(visina_zubca/s,pat/s,0);
        glEnd();
   
 	//leva strana
        glBegin(GL_QUADS);
 	     glTexCoord2f(0, 0);
-    	     glVertex3f(-1.15*x, -1.99, 0.5);
+    	     glVertex3f(-0.2*x, -1.99, 0.5);
     	     glNormal3f(-visina_zubca/s,pat/s,0);
 
     	     glTexCoord2f(1, 0);
-	     glVertex3f(-1.15*x, -1.99, 1);
+	     glVertex3f(-0.2*x, -1.99, 1);
     	     glNormal3f(-visina_zubca/s,pat/s,0);
 
 	     glTexCoord2f(1, 1);
-             glVertex3f(-1.15*x, visina_zubca-2.9, 1);
+             glVertex3f(-0.2*x, visina_zubca-2.9, 1);
 	     glNormal3f(-visina_zubca/s,pat/s,0);
 
 	     glTexCoord2f(0, 1);
-   	     glVertex3f(-1.15*x, visina_zubca-2.9, 0.5);
+   	     glVertex3f(-0.2*x, visina_zubca-2.9, 0.5);
     	     glNormal3f(-visina_zubca/s,pat/s,0);
   	glEnd();
 }
 
           glBindTexture(GL_TEXTURE_2D, 1);
+   	  return 1;
 }
 
 static void dovodnici()
@@ -1258,8 +1274,8 @@ static void pokretac_sata()
 
 void on_display(void){
 
-	int i;
-
+	int i=0;
+        
         init_lights();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -1277,13 +1293,41 @@ void on_display(void){
               5 * cos(theta) * sin(phi),
               5 * sin(theta),
               0, 0, 0, 0, 1, 0);
-	
+
+	//zid
+
+	for(i=0;i<prom;i++)
+	{	
 	glPushMatrix();
-	 glRotatef(90,0,1,0);
-         glTranslatef(-pomeraj/8,0,0);
-	 zid(5,5,5,5);
+	 glTranslatef(0,0,-1);	
+  	 glRotatef(90,0,1,0);
+         glTranslatef(0,0,-pomeraj/8);
+	 glTranslatef(-1*i,0,0);
+         glRotatef(ugao,0,1,0);
+	  zid1=zid(5,5,5,5);
+	glPopMatrix();
+         
+	glPushMatrix();
+	 glTranslatef(0,0,-1);	
+  	 glRotatef(90,0,1,0);
+         glTranslatef(0,0,-pomeraj/8);
+	 glTranslatef(-1.5*i,0,0);
+         glRotatef(ugao1,0,1,0);
+	  zid1=zid(5,5,5,5);
 	glPopMatrix();
 
+	glPushMatrix();
+	 glTranslatef(0,0,-1);	
+  	 glRotatef(90,0,1,0);
+         glTranslatef(-pomeraj/8,0,0);
+	 glTranslatef(-2*i,0,0);
+         glRotatef(ugao2,0,1,0);
+	  zid1=zid(5,5,5,5);
+	glPopMatrix();
+
+	}
+
+ 	
 	nebo_i_zemlja(14);
 	
 
