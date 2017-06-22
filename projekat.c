@@ -14,12 +14,12 @@
 #define FILENAME1 "teksture/2.bmp"
 #define FILENAME2 "teksture/zid.bmp"
 
+static int *zid1;
 
 /* Identifikatori tekstura. */
 static GLuint names[3];
 static GLenum h;
 
-//static int zid1[3];
 static int prom =0;
 
 // velicina crtica za minute
@@ -38,6 +38,7 @@ static float phi, theta, delta_phi, delta_theta,ugao=0,ugao1=0,ugao2=0;
 float pomeraj=0.0f, pomeraj1=0.0f,pomeraj3=0.0f, pomeraj4 = 0.0f,pomeraj2=0.0f,pomeraj5=0.0f, pomeraj6=0.0f, pomeraj7=0.0f;
 int frameNumber = 0;
 
+int k=3, kk=3;
 
 //deklaracije funkcija
 static void on_keyboard(unsigned char key, int x, int y);
@@ -84,6 +85,14 @@ int main(int argc, char* argv[]){
     delta_phi = delta_theta = PI / 90;
 
     initialize();
+
+ 
+    zid1=(int*)malloc(kk*sizeof(int));
+	if(zid1==NULL){
+	  printf("malloc failded");	
+	  exit(EXIT_FAILURE);	
+	}
+
 
     glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
     glEnable(GL_DEPTH_TEST);
@@ -1308,28 +1317,25 @@ void on_display(void){
 
 	//zid
 	//pravim niz od 3 elementa(3 zida)	
-	
-	   int p = rand() % 4;	
-	   GLint zid1[p];
-	
 
  	   glPushMatrix();
-           glTranslatef(0,0,pomeraj/8);
-	   glRotatef(90,0,1,0); 
+             glTranslatef(0,0,pomeraj/8);
+	     glRotatef(90,0,1,0); 
          
-	   glRotatef(ugao,0,0,1);
-	   zid1[0]=zid(5,6,5,5);
-	   glRotatef(-ugao,0,0,1);	
+	     glRotatef(ugao,0,0,1);
+ 	     zid1[i+0]=zid(5,5,5,5);
+	     glRotatef(-ugao,0,0,1);
+	     
+	     glTranslatef(-1.6,0,0);
+	     glRotatef(ugao1,0,0,1);
+	     zid1[i+1]=zid(5,5,5,5);	
+	     glRotatef(-ugao1,0,0,1);	
+	    
+	     glTranslatef(-1.6,0,0);
+	     glRotatef(ugao2,0,0,1);
+	      zid1[i+2]=zid(5,5,5,5);	
+	     glRotatef(-ugao2,0,0,1);
 	 
-	   glTranslatef(-1.6,0,0);
-	   glRotatef(ugao1,0,0,1);	
-	   zid1[1]=zid(5,6,5,5);
-	   glRotatef(-ugao1,0,0,1);	
-	
-           glTranslatef(-1.6,0,0);
-	   glRotatef(ugao2,0,0,1);	
-	   zid1[2]=zid(5,6,5,5);
-	   glRotatef(-ugao2,0,0,1);	
 
 	 glPopMatrix();
  	
