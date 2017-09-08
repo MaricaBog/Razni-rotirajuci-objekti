@@ -1,4 +1,5 @@
 #include <GL/glut.h>
+#include <GL/gl.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,12 +15,19 @@
 #define FILENAME1 "teksture/2.bmp"
 #define FILENAME2 "teksture/zid.bmp"
 
-static int *zid1;
 
 /* Identifikatori tekstura. */
 static GLuint names[3];
 static GLenum h;
 
+/*promenljive za objekte*/
+GLuint elephant;
+float elephantrot;
+char ch='1';
+int q=0;
+GLint zid1[3];
+
+//static int zid1[3];
 static int prom =0;
 
 // velicina crtica za minute
@@ -33,12 +41,11 @@ const float clockR = 1.0f, clockVol  = 2.0f, angle1min = M_PI / 30.0f;
 
 // Uglovi u sfernom koordinatnom sistemu koji odredjuju polozaj vidne 
 // tacke.
-static float phi, theta, delta_phi, delta_theta,ugao=0,ugao1=0,ugao2=0;
+static float phi, theta, delta_phi, delta_theta,ugao1=0,ugao2=0;
 
 float pomeraj=0.0f, pomeraj1=0.0f,pomeraj3=0.0f, pomeraj4 = 0.0f,pomeraj2=0.0f,pomeraj5=0.0f, pomeraj6=0.0f, pomeraj7=0.0f;
 int frameNumber = 0;
 
-int k=3, kk=3;
 
 //deklaracije funkcija
 static void on_keyboard(unsigned char key, int x, int y);
@@ -49,6 +56,8 @@ static void init_lights();
 static void set_material(int id);
 void mis(int dugme, int stanje, int x, int y);
 
+void loadObj(char *fname);
+int crtajZid();
 static void vetrenjaca();
 static void elisa();
 static void motor();
@@ -58,7 +67,6 @@ static void crtajPrsten(float rZ, float rR);
 static void crtajZubac(float rZ, float rR, int br_zubaca, float visina_zubca);
 static void crtajZupcanik(float rZ, float rR, float visina_zubca, int br_zubaca);
 static void initialize(void);
-static int zid(float rZ, float rR, int br_zubaca, float visina_zubca);
 static void dovodnici();
 static void pokretac_sata();
 static void vetar();
@@ -80,19 +88,14 @@ int main(int argc, char* argv[]){
     glutKeyboardFunc(on_keyboard);
     glutTimerFunc(33, on_timer, 1);
     glutMouseFunc(mis);
+    loadObj("kutija.obj");
+
+     
 
     phi = theta = 0;
     delta_phi = delta_theta = PI / 90;
 
     initialize();
-
- 
-    zid1=(int*)malloc(kk*sizeof(int));
-	if(zid1==NULL){
-	  printf("malloc failded");	
-	  exit(EXIT_FAILURE);	
-	}
-
 
     glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
     glEnable(GL_DEPTH_TEST);
@@ -100,6 +103,59 @@ int main(int argc, char* argv[]){
     glutMainLoop();
 
   return 0;
+}
+
+
+void loadObj(char *fname)
+{
+	FILE *fp;
+	int read;
+	GLfloat x, y, z;
+	char ch;
+	elephant=glGenLists(1);
+	fp=fopen(fname,"r");
+
+	if (!fp) 
+        {
+         printf("Fajl ne moze biti otvoren %s\n", fname);
+	  exit(1);
+        }
+	
+	glPointSize(2.0);
+	glNewList(elephant, GL_COMPILE);
+	{
+	glPushMatrix();
+	
+	glBegin(GL_QUADS);
+	while(!(feof(fp)))
+	{
+  	 read=fscanf(fp,"%c %f %f %f",&ch,&x,&y,&z);
+  	   if(read==4&&ch=='v')
+  	   {
+   	   glVertex3f(x,y,z);
+ 	   }
+ 	}
+	glEnd();
+	}
+
+	glPopMatrix();
+	glEndList();
+	
+	fclose(fp);
+}
+
+
+int crtajZid()
+{
+ 	glPushMatrix();
+ 	glTranslatef(0,-40.00,-105);
+ 	glColor3f(1.0,0.23,0.27);
+ 	glScalef(0.07,0.07,0.07);
+ 	glCallList(elephant);
+ 	glPopMatrix();
+ 	elephantrot=elephantrot+0.6;
+ 	if(elephantrot>360)elephantrot=elephantrot-360;
+	return 1;
 }
 
 
@@ -332,41 +388,33 @@ static void on_keyboard(unsigned char key, int x, int y)
 	glutPostRedisplay();
  	break;	
 
-    //rotira se prvi zid
-     case 'm':
-  	ugao++;
-	glutPostRedisplay();
-	break;
-
-    //rotira se drugi zid
-    case 'M':
-	ugao1++;
-	glutPostRedisplay();
-	break;
-
-    //rotira se treci zid
-    case'q':
-	ugao2++;
-	glutPostRedisplay();
-	break;
-
-
     case 'f':
 	pomeraj7+=0.5;
 	pomeraj1+=0.5;
 	pomeraj3+=0.2;  //pomerac sata
         glutPostRedisplay();
 	break;
+	
+    case '1':
+	printf("Izabrali ste prvi objekat\n");
+	ugao1+=30;
+	glutPostRedisplay();
+	break;
+    case '2':
+	printf("Izabrali ste drugi objekat\n");
+	ugao2+=30;
+	glutPostRedisplay();
+	break;
 
    //formati
-    case '1':
+   /* case '1':
 	     h = GL_ALPHA;
 	     glutPostRedisplay();
 	     break;
     case '2':
 	     h = GL_RED;
 	     glutPostRedisplay();
-	     break;
+	     break;*/
 	}
 }
    
@@ -384,7 +432,7 @@ static void on_reshape(int width,int height)
 	/*postavalja parametre perspektive*/
 	/*60-ugao vidnog polja, u pravcu y ose,  razlomak- vidno polje po x osi i kolicnik je sirine i visine,*/
 	/*1-bliza ravan - near, 10 dalja ravan -far*/
-	gluPerspective(60, width/(float)height, 1, 10);
+	gluPerspective(60, width/(float)height, 1, 1000);
 }
 
 
@@ -1107,128 +1155,6 @@ static void nebo_i_zemlja(float visina_zubca)
 
 }
 
-static int zid(float rZ, float rR, int br_zubaca, float visina_zubca){
-{
-	float x= (2*rZ*PI)/(1.6*br_zubaca);
-	float greska=rZ-sqrt(rZ*rZ-(0.3*x)*(0.3*x));
-	visina_zubca+=greska;
-	glBindTexture(GL_TEXTURE_2D, names[2]);
-
-	//pod
-	glBegin(GL_QUADS);
-	        glTexCoord2f(0, 0);
-    		glVertex3f(-0.2*x, -1.99, 1);
-   		glNormal3f(0,-1,0);
-	        glTexCoord2f(1, 0);
-    		glVertex3f(-0.2*x, -1.99, 0.5);
-    		glNormal3f(0,-1,0);
-	        glTexCoord2f(1, 1);
-    		glVertex3f(0.2*x, -1.99, 0.5);
-    		glNormal3f(0,-1,0);
-	        glTexCoord2f(0, 1);
-    		glVertex3f(0.2*x, -1.99, 1);
-    		glNormal3f(0,-1,0);
-  	glEnd();
-
-	//krov
-	glBegin(GL_QUADS);
-	        glTexCoord2f(0, 0);
-		glVertex3f(-0.2*x, visina_zubca-2.9, 1);
-		glNormal3f(0,1,0);
-	        glTexCoord2f(1, 0);
-   		glVertex3f(-0.2*x, visina_zubca-2.9, 0.5);
-    		glNormal3f(0,1,0);
-	        glTexCoord2f(1, 1);
-    		glVertex3f(0.2*x, visina_zubca-2.9, 0.5);
-    		glNormal3f(0,1,0);
-	        glTexCoord2f(0, 1);
-    		glVertex3f(0.2*x, visina_zubca-2.9, 1);
-    		glNormal3f(0,1,0);
-  	glEnd();
- 
-	//lice
-	glBegin(GL_QUADS);
-	        glTexCoord2f(0, 0);
-    		glVertex3f(-0.2*x, -1.99, 1);
-   		glNormal3f(0,0,1);
-
-	        glTexCoord2f(1, 0);
-		glVertex3f(0.2*x, -1.99, 1);
-    		glNormal3f(0,0,1);
-
-	        glTexCoord2f(1, 1);		
-    		glVertex3f(0.2*x, visina_zubca-2.9, 1);
-    		glNormal3f(0,0,1);
-
-	        glTexCoord2f(0, 1);
-   		glVertex3f(-0.2*x, visina_zubca-2.9, 1);
-    		glNormal3f(0,0,1);
-  	glEnd();
-
-  	//nalicje
-	glBegin(GL_QUADS);
-	        glTexCoord2f(0, 0);
-		glVertex3f(-0.2*x, -1.99, 0.5);
-    		glNormal3f(0,0,-1);
-	
-	        glTexCoord2f(1, 0);
-		glVertex3f(0.2*x, -1.99, 0.5);
-    		glNormal3f(0,0,-1);
-		
-	        glTexCoord2f(1, 1);
-    		glVertex3f(0.2*x, visina_zubca-2.9, 0.5);
-    		glNormal3f(0,0,-1);
-		
-	        glTexCoord2f(0, 1);
-   		glVertex3f(-0.2*x, visina_zubca-2.9, 0.5);
-    		glNormal3f(0,0,-1);
-  	glEnd();
-
-	//desna strana
-	float pat=0.2*x;
-	float s=sqrt(visina_zubca*visina_zubca-(0.2*x)*(0.2*x));
-  
-	glBegin(GL_QUADS);
-	      glTexCoord2f(0, 0);
-	      glVertex3f(0.2*x, -1.99, 1);
-    	      glNormal3f(visina_zubca/s,pat/s,0);
-
-    	      glTexCoord2f(1, 0);
-	      glVertex3f(0.2*x, -1.99, 0.5);
-    	      glNormal3f(visina_zubca/s,pat/s,0);
-
-	      glTexCoord2f(1, 1);
-    	      glVertex3f(0.2*x, visina_zubca-2.9, 0.5);
-	      glNormal3f(visina_zubca/s,pat/s,0);
-
-	      glTexCoord2f(0, 1);
-    	      glVertex3f(0.2*x, visina_zubca-2.9, 1);
-    	      glNormal3f(visina_zubca/s,pat/s,0);
-       glEnd();
-  
-	//leva strana
-       glBegin(GL_QUADS);
-	     glTexCoord2f(0, 0);
-    	     glVertex3f(-0.2*x, -1.99, 0.5);
-    	     glNormal3f(-visina_zubca/s,pat/s,0);
-
-    	     glTexCoord2f(1, 0);
-	     glVertex3f(-0.2*x, -1.99, 1);
-    	     glNormal3f(-visina_zubca/s,pat/s,0);
-
-	     glTexCoord2f(1, 1);
-             glVertex3f(-0.2*x, visina_zubca-2.9, 1);
-	     glNormal3f(-visina_zubca/s,pat/s,0);
-
-	     glTexCoord2f(0, 1);
-   	     glVertex3f(-0.2*x, visina_zubca-2.9, 0.5);
-    	     glNormal3f(-visina_zubca/s,pat/s,0);
-  	glEnd();
-}
-
-          glBindTexture(GL_TEXTURE_2D, 1);
-   	  return 1;
-}
 
 static void dovodnici()
 {
@@ -1297,7 +1223,7 @@ void on_display(void){
 
 	int i=0;
         
-        init_lights();
+       init_lights();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -1315,30 +1241,28 @@ void on_display(void){
               5 * sin(theta),
               0, 0, 0, 0, 1, 0);
 
-	//zid
-	//pravim niz od 3 elementa(3 zida)	
+	
+	/*niz objekata*/
 
- 	   glPushMatrix();
-             glTranslatef(0,0,pomeraj/8);
-	     glRotatef(90,0,1,0); 
-         
-	     glRotatef(ugao,0,0,1);
- 	     zid1[i+0]=zid(5,5,5,5);
-	     glRotatef(-ugao,0,0,1);
-	     
-	     glTranslatef(-1.6,0,0);
-	     glRotatef(ugao1,0,0,1);
-	     zid1[i+1]=zid(5,5,5,5);	
-	     glRotatef(-ugao1,0,0,1);	
-	    
-	     glTranslatef(-1.6,0,0);
-	     glRotatef(ugao2,0,0,1);
-	      zid1[i+2]=zid(5,5,5,5);	
-	     glRotatef(-ugao2,0,0,1);
-	 
+	 glPushMatrix();
+	  set_material(5);
+	  glRotatef(-ugao1,1,0,0);
+          glTranslatef(0,0,pomeraj/8);
+	  glScalef(0.01,0.11,0.07);
+	  glTranslatef(60,21.95,85); 
+	     zid1[0]=crtajZid();	
+	 glPopMatrix();	
 
-	 glPopMatrix();
- 	
+	 glPushMatrix();
+	  set_material(5);
+	  glRotatef(-ugao2,0,0,1);
+          glTranslatef(0,0,pomeraj/8);
+	  glScalef(0.01,0.11,0.07);
+	  glTranslatef(60,21.95,124); 
+	     zid1[0]=crtajZid();	
+	 glPopMatrix();	 
+   
+ 
 	nebo_i_zemlja(14);
 	
 
@@ -1456,7 +1380,7 @@ void on_display(void){
 static void init_lights()
 {
     /* Pozicija svetla (u pitanju je direkcionalno svetlo). */
-    GLfloat light_position[] = { 0, 0, 1, 1 };
+    GLfloat light_position[] = { 1, 0, 0, 1 };
 
     /* Ambijentalna boja svetla. */
     GLfloat light_ambient[] = { 0.1, 0.1, 0.1, 1 };
